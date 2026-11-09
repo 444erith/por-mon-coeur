@@ -38,15 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentScale = 1;
   let minScale = 1;
   let maxScale = 4;
+  let posX = 0;
+  let posY = 0;
+  let isPanning = false;
+  let startX = 0;
+  let startY = 0;
   let startPinchDistance = 0;
 
-  const updateImageTransform = () => {
-    modalImage.style.transform = `scale(${currentScale})`;
+  const updateTransform = () => {
+    modalImage.style.transform = `translate(${posX}px, ${posY}px) scale(${currentScale})`;
   };
 
   const resetZoom = () => {
     currentScale = 1;
-    updateImageTransform();
+    posX = 0;
+    posY = 0;
+    updateTransform();
   };
 
   media3Trigger.addEventListener('click', (e) => {
@@ -66,16 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 400);
   };
 
-  modalClose.addEventListener('click', closeModal);
-
-  modalImage.addEventListener('click', (e) => {
+  modalClose.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (currentScale > 1) {
-      currentScale = minScale;
-    } else {
-      currentScale = 2.5;
-    }
-    updateImageTransform();
+    closeModal();
   });
 
   modalZoomContainer.addEventListener('wheel', (e) => {
@@ -85,9 +85,33 @@ document.addEventListener('DOMContentLoaded', () => {
       currentScale = Math.min(currentScale + zoomStep, maxScale);
     } else {
       currentScale = Math.max(currentScale - zoomStep, minScale);
+      if (currentScale === 1) {
+        posX = 0;
+        posY = 0;
+      }
     }
-    updateImageTransform();
+    updateTransform();
   }, { passive: false });
+
+  modalZoomContainer.addEventListener('mousedown', (e) => {
+    if (currentScale > 1) {
+      isPanning = true;
+      startX = e.clientX - posX;
+      startY = e.clientY - posY;
+      e.preventDefault();
+    }
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isPanning || currentScale === 1) return;
+    posX = e.clientX - startX;
+    posY = e.clientY - startY;
+    updateTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    isPanning = false;
+  });
 
   const getTouchDistance = (touches) => {
     const dx = touches[0].clientX - touches[1].clientX;
@@ -98,6 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
   modalZoomContainer.addEventListener('touchstart', (e) => {
     if (e.touches.length === 2) {
       startPinchDistance = getTouchDistance(e.touches);
+    } else if (e.touches.length === 1 && currentScale > 1) {
+      isPanning = true;
+      startX = e.touches[0].clientX - posX;
+      startY = e.touches[0].clientY - posY;
     }
   }, { passive: true });
 
@@ -109,9 +137,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let newScale = currentScale * factor;
         newScale = Math.max(minScale, Math.min(newScale, maxScale));
         currentScale = newScale;
-        updateImageTransform();
+        if (currentScale === 1) {
+          posX = 0;
+          posY = 0;
+        }
+        updateTransform();
         startPinchDistance = currentDistance;
       }
+    } else if (e.touches.length === 1 && isPanning && currentScale > 1) {
+      posX = e.touches[0].clientX - startX;
+      posY = e.touches[0].clientY - startY;
+      updateTransform();
     }
   }, { passive: true });
 
@@ -119,12 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.touches.length < 2) {
       startPinchDistance = 0;
     }
-  });
-
-  imageModal.addEventListener('click', closeModal);
-  modalZoomContainer.addEventListener('click', (e) => {
-    if (e.target === modalZoomContainer) {
-      closeModal();
+    if (e.touches.length === 0) {
+      isPanning = false;
     }
   });
 
@@ -208,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const player = document.querySelector('.audio-player');
   let isDragging = false;
-  let startX, startY, initialLeft, initialTop;
+  let startXPlayer, startYPlayer, initialLeft, initialTop;
 
   const interactiveInputs = player.querySelectorAll('input, button');
   interactiveInputs.forEach(input => {
@@ -225,16 +257,16 @@ document.addEventListener('DOMContentLoaded', () => {
     player.style.left = `${rect.left}px`;
     player.style.top = `${rect.top}px`;
 
-    startX = clientX;
-    startY = clientY;
+    startXPlayer = clientX;
+    startYPlayer = clientY;
     initialLeft = rect.left;
     initialTop = rect.top;
   };
 
   const moveDrag = (clientX, clientY) => {
     if (!isDragging) return;
-    const deltaX = clientX - startX;
-    const deltaY = clientY - startY;
+    const deltaX = clientX - startXPlayer;
+    const deltaY = clientY - startYPlayer;
     player.style.left = `${initialLeft + deltaX}px`;
     player.style.top = `${initialTop + deltaY}px`;
   };
