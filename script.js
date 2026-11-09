@@ -34,11 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalImage = document.getElementById('modalImage');
   const modalClose = document.getElementById('modalClose');
   const modalZoomContainer = document.getElementById('modalZoomContainer');
+  let currentZoomScale = 1;
+
+  const resetZoom = () => {
+    currentZoomScale = 1;
+    modalImage.style.transform = 'scale(1)';
+    modalImage.classList.remove('zoomed');
+  };
 
   media3Trigger.addEventListener('click', (e) => {
     e.stopPropagation();
     imageModal.classList.remove('hidden');
-    modalImage.classList.remove('zoomed');
+    resetZoom();
     requestAnimationFrame(() => {
       imageModal.classList.add('active');
     });
@@ -46,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const closeModal = () => {
     imageModal.classList.remove('active');
-    modalImage.classList.remove('zoomed');
+    resetZoom();
     setTimeout(() => {
       imageModal.classList.add('hidden');
     }, 400);
@@ -56,8 +63,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   modalImage.addEventListener('click', (e) => {
     e.stopPropagation();
-    modalImage.classList.toggle('zoomed');
+    if (currentZoomScale > 1) {
+      resetZoom();
+    } else {
+      currentZoomScale = 2.2;
+      modalImage.classList.add('zoomed');
+      modalImage.style.transform = `scale(${currentZoomScale})`;
+    }
   });
+
+  modalZoomContainer.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    
+    if (e.deltaY < 0) {
+      currentZoomScale = Math.min(currentZoomScale + 0.2, 3.5);
+    } else {
+      currentZoomScale = Math.max(currentZoomScale - 0.2, 1);
+    }
+
+    if (currentZoomScale > 1) {
+      modalImage.classList.add('zoomed');
+      modalImage.style.transform = `scale(${currentZoomScale})`;
+    } else {
+      resetZoom();
+    }
+  }, { passive: false });
 
   imageModal.addEventListener('click', closeModal);
   modalZoomContainer.addEventListener('click', (e) => {
