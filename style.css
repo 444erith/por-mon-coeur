@@ -215,12 +215,11 @@ body {
   object-fit: contain;
   transform-origin: center center;
   user-select: none;
-  pointer-events: none;
+  pointer-events: auto;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   backface-visibility: hidden;
-  transform: translate3d(0, 0, 0) scale(1);
-  transition: transform 0.1s ease-out;
+  will-change: transform;
 }
 
 .modal-close-btn {
