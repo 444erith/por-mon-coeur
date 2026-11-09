@@ -1,204 +1,458 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const step1 = document.getElementById('step1');
-  const step2 = document.getElementById('step2');
-  const step4 = document.getElementById('step4');
+:root {
+  --bg-light-blue: #dceaf7;
+  --bg-card: #f9fbfd;
+  --pastel-blue-accent: #b4d3ee;
+  --text-dark: #4a5568;
+  --text-muted: #718096;
+  --border-subtle: #c7ddf0;
+  --btn-blue: #a3caed;
+  --btn-hover: #8cbbe6;
+  --shadow-soft: 0 12px 30px rgba(148, 175, 202, 0.35);
+}
 
-  const btnStep1 = document.getElementById('btnStep1');
-  const btnStep2 = document.getElementById('btnStep2');
-  const btnBack2 = document.getElementById('btnBack2');
-  const btnBack4 = document.getElementById('btnBack4');
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  btnStep1.addEventListener('click', () => {
-    step1.classList.add('hidden');
-    step2.classList.remove('hidden');
-  });
+body {
+  font-family: 'Playfair Display', Georgia, serif;
+  background-color: var(--bg-light-blue);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  overflow-x: hidden;
+  touch-action: manipulation;
+}
 
-  btnStep2.addEventListener('click', () => {
-    step2.classList.add('hidden');
-    step4.classList.remove('hidden');
-  });
+.mobile-viewport-bound {
+  width: 100%;
+  max-width: 393px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
 
-  btnBack2.addEventListener('click', () => {
-    step2.classList.add('hidden');
-    btnStep2.classList.add('hidden');
-    step1.classList.remove('hidden');
-  });
+.main-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
 
-  btnBack4.addEventListener('click', () => {
-    step4.classList.add('hidden');
-    step2.classList.remove('hidden');
-  });
-  
-  const media3Trigger = document.getElementById('media3Trigger');
-  const imageModal = document.getElementById('imageModal');
-  const modalImage = document.getElementById('modalImage');
-  const modalClose = document.getElementById('modalClose');
-  const modalZoomContainer = document.getElementById('modalZoomContainer');
+.app-container {
+  width: 100%;
+  min-height: 480px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  media3Trigger.addEventListener('click', () => {
-    imageModal.classList.remove('hidden');
-    modalImage.classList.remove('zoomed');
-    requestAnimationFrame(() => {
-      imageModal.classList.add('active');
-    });
-  });
+.card {
+  width: 100%;
+  border-radius: 24px;
+  padding: 2rem 1.25rem;
+  box-shadow: var(--shadow-soft);
+  border: 4px solid #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
 
-  const closeModal = () => {
-    imageModal.classList.remove('active');
-    modalImage.classList.remove('zoomed');
-    setTimeout(() => {
-      imageModal.classList.add('hidden');
-    }, 400);
-  };
+.step.hidden {
+  display: none !important;
+}
 
-  modalClose.addEventListener('click', closeModal);
+.gingham-bg {
+  background-color: #ebf4fc;
+  background-image: 
+    linear-gradient(90deg, rgba(184, 212, 238, 0.4) 50%, transparent 50%),
+    linear-gradient(rgba(184, 212, 238, 0.4) 50%, transparent 50%);
+  background-size: 32px 32px;
+}
 
-  modalImage.addEventListener('click', (e) => {
-    e.stopPropagation();
-    modalImage.classList.toggle('zoomed');
-  });
+.stripe-bg {
+  background: repeating-linear-gradient(
+    90deg,
+    #f2f7fc,
+    #f2f7fc 20px,
+    #e2effa 20px,
+    #e2effa 40px
+  );
+}
 
-  imageModal.addEventListener('click', () => {
-    closeModal();
-  });
+.pastel-bg {
+  background-color: #f7fafc;
+  background-image: radial-gradient(#dceaf7 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+}
 
-  modalZoomContainer.addEventListener('click', (e) => {
-    if (e.target === modalZoomContainer) {
-      closeModal();
-    }
-  });
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
 
-  const audio = document.getElementById('bgAudio');
-  const playPauseBtn = document.getElementById('playPauseBtn');
-  const progressBar = document.getElementById('progressBar');
-  const currentTimeEl = document.getElementById('currentTime');
-  const durationEl = document.getElementById('duration');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const volIcon = document.getElementById('volIcon');
+.media-frame {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
 
-  audio.volume = volumeSlider.value / 100;
-  
-  const updateVolumeIcon = (val) => {
-    if (val == 0) {
-      volIcon.textContent = '🔇';
-    } else if (val <= 25) {
-      volIcon.textContent = '🔈';
-    } else if (val <= 75) {
-      volIcon.textContent = '🔉';
-    } else {
-      volIcon.textContent = '🔊';
-    }
-  };
+.media1-img {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  display: block;
+}
 
-  const formatTime = (seconds) => {
-    if (isNaN(seconds)) return '0:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
+.media2-img {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  display: block;
+  animation: gifLoopSpeed 0.5s infinite steps(1, end);
+}
 
-  playPauseBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (audio.paused) {
-      audio.play();
-      playPauseBtn.textContent = '❚❚';
-    } else {
-      audio.pause();
-      playPauseBtn.textContent = '▶';
-    }
-  });
+@keyframes gifLoopSpeed {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1); }
+}
 
-  audio.addEventListener('timeupdate', () => {
-    if (audio.duration) {
-      const progress = (audio.currentTime / audio.duration) * 100;
-      progressBar.value = progress;
-      currentTimeEl.textContent = formatTime(audio.currentTime);
-      durationEl.textContent = formatTime(audio.duration);
-    }
-  });
+.media3-img {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  object-fit: contain;
+  background: transparent;
+  display: block;
+  cursor: zoom-in;
+  image-rendering: -webkit-optimize-contrast; /* Keeps it crisp */
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  progressBar.addEventListener('input', (e) => {
-    e.stopPropagation();
-    if (audio.duration) {
-      audio.currentTime = (progressBar.value / 100) * audio.duration;
-    }
-  });
+.media3-img:hover {
+  transform: scale(1.03);
+}
 
-  volumeSlider.addEventListener('input', (e) => {
-    e.stopPropagation();
-    const val = volumeSlider.value;
-    audio.volume = val / 100;
-    updateVolumeIcon(val);
-  });
+.hint-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
 
-  let lastVolume = 75;
-  volIcon.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (audio.volume > 0) {
-      lastVolume = volumeSlider.value;
-      volumeSlider.value = 0;
-      audio.volume = 0;
-      updateVolumeIcon(0);
-    } else {
-      volumeSlider.value = lastVolume;
-      audio.volume = lastVolume / 100;
-      updateVolumeIcon(lastVolume);
-    }
-  });
+.media4-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  display: block;
+  flex-shrink: 0;
+}
 
-  const player = document.querySelector('.audio-player');
-  let isDragging = false;
-  let startX, startY, initialLeft, initialTop;
+.image-modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  const interactiveInputs = player.querySelectorAll('input, button');
-  interactiveInputs.forEach(input => {
-    input.addEventListener('mousedown', (e) => e.stopPropagation());
-    input.addEventListener('touchstart', (e) => e.stopPropagation());
-  });
+.image-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  const startDrag = (clientX, clientY) => {
-    isDragging = true;
-    const rect = player.getBoundingClientRect();
-    
-    player.style.position = 'fixed';
-    player.style.transform = 'none';
-    player.style.left = `${rect.left}px`;
-    player.style.top = `${rect.top}px`;
+.image-modal.hidden {
+  display: none !important;
+}
 
-    startX = clientX;
-    startY = clientY;
-    initialLeft = rect.left;
-    initialTop = rect.top;
-  };
+.modal-zoom-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y pinch-zoom;
+  cursor: zoom-out;
+}
 
-  const moveDrag = (clientX, clientY) => {
-    if (!isDragging) return;
-    const deltaX = clientX - startX;
-    const deltaY = clientY - startY;
-    player.style.left = `${initialLeft + deltaX}px`;
-    player.style.top = `${initialTop + deltaY}px`;
-  };
+.modal-img {
+  max-width: 85vw;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.85);
+  transform-origin: center center;
+  cursor: zoom-in;
+  user-select: none;
+  image-rendering: high-quality;
+}
 
-  const stopDrag = () => {
-    isDragging = false;
-  };
+.image-modal.active .modal-img {
+  transform: scale(1);
+}
 
-  player.addEventListener('mousedown', (e) => {
-    startDrag(e.clientX, e.clientY);
-  });
-  document.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
-  document.addEventListener('mouseup', stopDrag);
+.modal-img.zoomed {
+  transform: scale(2.2);
+  cursor: zoom-out;
+}
 
-  player.addEventListener('touchstart', (e) => {
-    const touch = e.touches[0];
-    startDrag(touch.clientX, touch.clientY);
-  }, { passive: true });
+.modal-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  color: var(--text-dark);
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 10000;
+  transition: background 0.2s;
+}
 
-  document.addEventListener('touchmove', (e) => {
-    if (!isDragging) return;
-    const touch = e.touches[0];
-    moveDrag(touch.clientX, touch.clientY);
-  }, { passive: true });
+.modal-close-btn:hover {
+  background: #ffffff;
+}
 
-  document.addEventListener('touchend', stopDrag);
-});
+.content-split {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.subtitle {
+  font-family: 'Fredoka', sans-serif;
+  letter-spacing: 0.5px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.btn {
+  font-family: 'Fredoka', sans-serif;
+  background-color: var(--btn-blue);
+  color: #ffffff;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  padding: 0.65rem 1.5rem;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(150, 180, 210, 0.4);
+  transition: transform 0.25s ease, background-color 0.25s ease;
+}
+
+.btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(140, 170, 200, 0.5);
+}
+
+.btn-secondary {
+  background-color: #cbdcf0;
+  color: var(--text-dark);
+  padding: 0.65rem 1.2rem;
+}
+
+.fade-zoom-in {
+  animation: fadeZoom 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.zoom-in {
+  animation: zoomOnly 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pulse {
+  animation: pulseEffect 2.2s infinite ease-in-out;
+}
+
+@keyframes fadeZoom {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes zoomOnly {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseEffect {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.audio-player {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 230px + 10px);
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 350px;
+  background: #ffffff;
+  border: 2px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 12px 30px rgba(140, 170, 200, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  z-index: 1000;
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.envelope-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.song-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.song-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.song-artist {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--btn-blue);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(163, 202, 237, 0.4);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.play-btn:hover {
+  background-color: var(--btn-hover);
+  transform: scale(1.05);
+}
+
+.scrubber-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #e2effa;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--btn-blue);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.time-readout {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.volume-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.8rem;
+  padding-top: 0.1rem;
+}
+
+.vol-icon {
+  cursor: pointer;
+  user-select: none;
+}
