@@ -34,12 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalImage = document.getElementById('modalImage');
   const modalClose = document.getElementById('modalClose');
   const modalZoomContainer = document.getElementById('modalZoomContainer');
-  let currentZoomScale = 1;
+
+  let currentScale = 1;
+  let minScale = 1;
+  let maxScale = 4;
+  let startPinchDistance = 0;
+
+  const updateImageTransform = () => {
+    modalImage.style.transform = `scale(${currentScale})`;
+  };
 
   const resetZoom = () => {
-    currentZoomScale = 1;
-    modalImage.style.transform = 'scale(1)';
-    modalImage.classList.remove('zoomed');
+    currentScale = 1;
+    updateImageTransform();
   };
 
   media3Trigger.addEventListener('click', (e) => {
@@ -63,31 +70,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
   modalImage.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (currentZoomScale > 1) {
-      resetZoom();
+    if (currentScale > 1) {
+      currentScale = minScale;
     } else {
-      currentZoomScale = 2.2;
-      modalImage.classList.add('zoomed');
-      modalImage.style.transform = `scale(${currentZoomScale})`;
+      currentScale = 2.5;
     }
+    updateImageTransform();
   });
 
   modalZoomContainer.addEventListener('wheel', (e) => {
     e.preventDefault();
-    
+    const zoomStep = 0.25;
     if (e.deltaY < 0) {
-      currentZoomScale = Math.min(currentZoomScale + 0.2, 3.5);
+      currentScale = Math.min(currentScale + zoomStep, maxScale);
     } else {
-      currentZoomScale = Math.max(currentZoomScale - 0.2, 1);
+      currentScale = Math.max(currentScale - zoomStep, minScale);
     }
-
-    if (currentZoomScale > 1) {
-      modalImage.classList.add('zoomed');
-      modalImage.style.transform = `scale(${currentZoomScale})`;
-    } else {
-      resetZoom();
-    }
+    updateImageTransform();
   }, { passive: false });
+
+  const getTouchDistance = (touches) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  modalZoomContainer.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      startPinchDistance = getTouchDistance(e.touches);
+    }
+  }, { passive: true });
+
+  modalZoomContainer.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      const currentDistance = getTouchDistance(e.touches);
+      if (startPinchDistance > 0) {
+        const factor = currentDistance / startPinchDistance;
+        let newScale = currentScale * factor;
+        newScale = Math.max(minScale, Math.min(newScale, maxScale));
+        currentScale = newScale;
+        updateImageTransform();
+        startPinchDistance = currentDistance;
+      }
+    }
+  }, { passive: true });
+
+  modalZoomContainer.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) {
+      startPinchDistance = 0;
+    }
+  });
 
   imageModal.addEventListener('click', closeModal);
   modalZoomContainer.addEventListener('click', (e) => {
