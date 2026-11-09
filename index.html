@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>por mon coeur.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="mobile-viewport-bound">
+    <div class="main-wrapper">
+      <main class="app-container">
+        <section id="step1" class="card gingham-bg step active">
+          <div class="card-inner fade-zoom-in">
+            <img src="media/1.gif" class="media1-img"/>
+            <p class="subtitle">happy 23rd birthday!</p>
+          </div>
+
+          <div class="button-group">
+            <button id="btnStep1" class="btn pulse">click here!</button>
+          </div>
+        </section>
+
+        <section id="step2" class="card stripe-bg step hidden">
+          <div class="content-split">
+            <div class="media-frame polaroid zoom-in">
+              <img src="media/2.gif" class="media2-img"/>
+            </div>
+            <p class="subtitle">ako talaga 'yung gift mo- 
+              <br>jk click the button again hehe</p>
+          </div>
+
+          <div class="button-group">
+            <button id="btnBack2" class="btn btn-secondary">← back</button>
+            <button id="btnStep2" class="btn hidden pulse">click here!</button>
+          </div>
+        </section>
+
+        <section id="step4" class="card pastel-bg step hidden">
+          <div class="card-inner fade-zoom-in">
+            <img src="media/3.png" class="media3-img zoomable-trigger" id="media3Trigger"/>
+          </div>
+
+          <div class="button-group">
+            <button id="btnBack4" class="btn btn-secondary">← back</button>
+          </div>
+        </section>
+      </main>
+
+      <div id="imageModal" class="image-modal hidden">
+        <button id="modalClose" class="modal-close-btn">x</button>
+        <div class="modal-zoom-container" id="modalZoomContainer">
+          <img src="media/3.png" id="modalImage" class="modal-img"/>
+        </div>
+      </div>
+
+      <aside class="audio-player">
+        <div class="envelope-header">
+          <img src="media/4.png" alt="Album Cover" class="media4-img" />
+          <div class="song-meta">
+            <span class="song-title">minamahal - dani ?!</span>
+            <span class="song-artist">u can move this around :P</span>
+          </div>
+        </div>
+
+        <audio id="bgAudio" src="media/song.mp3" preload="metadata"></audio>
+
+        <div class="player-controls">
+          <button id="playPauseBtn" class="play-btn" aria-label="Play song">▶</button>
+          
+          <div class="scrubber-area">
+            <input type="range" id="progressBar" value="0" min="0" max="100" />
+            <div class="time-readout">
+              <span id="currentTime">0:00</span>
+              <span id="duration">0:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="volume-box">
+          <span id="volIcon" class="vol-icon">🔊</span>
+          <input type="range" id="volumeSlider" value="30" min="0" max="100" />
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
