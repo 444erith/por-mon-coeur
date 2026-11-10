@@ -209,6 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  audio.addEventListener('ended', () => {
+    playPauseBtn.textContent = '▶';
+  });
+
   progressBar.addEventListener('input', (e) => {
     e.stopPropagation();
     if (audio.duration) {
